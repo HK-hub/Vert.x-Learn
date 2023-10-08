@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>Vert.x Web Chat Room</title>
+    <script src="https://unpkg.io/sockjs-client@1.5.0/dist/sockjs.min.js"></script>
+    <script src='https://unpkg.io/@vertx/eventbus-bridge-client.js@1.0.0-1/vertx-eventbus.js'></script>
+</head>
+<body>
+    <h1>Welcome to Vert.x</h1>
+    <div>
+        <label for="messageRoom">聊天框</label>
+        <textarea id="messageRoom" rows="20" cols="100"></textarea>
+    </div>
+    <div>
+        <label for="nameInput">你的名字：</label>
+        <input type="text" id="nameInput"/>
+    </div>
+    <div>
+        <label for="messageInput">你要说的：</label>
+        <input type="text" id="messageInput"/>
+    </div>
+</body>
+
+<script type="text/javascript">
+
+    var eb = new EventBus('http://localhost:8080/chat');
+
+    eb.onopen = () => {
+        // set a handler to receive a message
+        eb.registerHandler('chatroom', (error, message) => {
+            console.log('received a message: ' + JSON.stringify(message));
+            const body = message.body;
+            // 接收到消息
+            var room = document.getElementById('messageRoom');
+            room.textContent = room.textContent + `${body.name}:${body.message}\n`;
+        });
+
+    }
+
+
+    var contentInput = document.getElementById('messageInput');
+    contentInput.addEventListener('keydown', (event) => {
+        const name = document.getElementById('nameInput').value;
+
+        if (event.key === 'Enter') {
+            console.log(name);
+            // send a message
+            eb.send('chatroom', {'name': name, 'message': contentInput.value});
+        }
+    })
+
+</script>
+</html>
