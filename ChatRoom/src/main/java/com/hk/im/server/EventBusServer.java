@@ -35,7 +35,7 @@ public class EventBusServer extends AbstractVerticle {
 
         Vertx.vertx().deployVerticle(new EventBusServer());
         // 启动死锁
-        deadlockTest();
+        // deadlockTest();
     }
 
     @Override
